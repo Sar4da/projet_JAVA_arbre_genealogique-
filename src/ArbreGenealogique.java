@@ -179,24 +179,49 @@ public class ArbreGenealogique {
         return soeurs;
     }    
 
-    public boolean addMarriage(String firstName, String lastName, String sex, Date birthDate, Person spouse) {
-        Marriage marriage;
-        if (spouse == null) {
-            return false;
-        }
-        Person person = new Person(firstName, lastName, birthDate, new ArrayList<>());
-        System.out.println(person.toString());
-        if (person instanceof Homme && spouse instanceof Femme) marriage = new Marriage((Homme)person, (Femme)spouse);
-        else if (person instanceof Femme && spouse instanceof Homme) marriage = new Marriage((Homme)spouse, (Femme)person);
-        else return false;
-        spouse.addMarriage(marriage);
-        person.addMarriage(marriage);
-        this.ajouterPerson(person);
-        this.ajouterMarriage(marriage);
-        System.out.println("Added person: " + person);
-        System.out.println("Added marriage: " + marriage);
-        return true;
+public boolean addMarriage(String firstName, String lastName, String sex, Date birthDate, Person spouse) {
+    System.out.println("Début addMarriage");
+    if (spouse == null) {
+        System.out.println("Spouse est null");
+        return false;
     }
+
+    if (firstName == null || lastName == null || birthDate == null || sex == null) {
+        System.out.println("Champs manquants");
+        return false;
+    }
+
+    Person person;
+    if (sex.equals("M")) {
+        person = new Homme(firstName, lastName, birthDate, new ArrayList<>());
+    } else if (sex.equals("F")) {
+        person = new Femme(firstName, lastName, birthDate, new ArrayList<>());
+    } else {
+        System.out.println("Sexe invalide : " + sex);
+        return false;
+    }
+
+    System.out.println("Personne créée : " + person);
+
+    Marriage marriage;
+    if (person instanceof Homme && spouse instanceof Femme) {
+        marriage = new Marriage((Homme) person, (Femme) spouse);
+    } else if (person instanceof Femme && spouse instanceof Homme) {
+        marriage = new Marriage((Homme) spouse, (Femme) person);
+    } else {
+        System.out.println("Types incompatibles : " + person.getClass() + " et " + spouse.getClass());
+        return false;
+    }
+
+    spouse.addMarriage(marriage);
+    person.addMarriage(marriage);
+    this.ajouterPerson(person);
+    this.ajouterMarriage(marriage);
+
+    System.out.println("Mariage ajouté : " + marriage);
+    return true;
+}
+
 
     public boolean addChildren(String firstName, String lastName, String sex, Date birthDate, Homme father, Femme mother) {
         Person person;
